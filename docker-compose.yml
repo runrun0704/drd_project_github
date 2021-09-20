@@ -1,0 +1,32 @@
+version: '3'
+services:
+  db:
+   image: postgres
+   environment:
+    POSTGRES_HOST_AUTH_METHOD: 'trust' 
+  web_backend:
+   container_name: web_backend_django
+   build:
+    context: ./backend/.
+    dockerfile: DockerfileDjango
+   tty: true 
+   command: python3 manage.py runserver 0.0.0.0:8000
+   volumes:
+    - ./backend/django_project:/code
+   ports:
+    - "8000:8000"
+   depends_on:
+    - db   
+  web_frontend:
+   container_name: web_frontend_react 
+   build:
+    context: ./frontend/.
+    dockerfile: DockerfileReact
+   tty: true 
+   command:  "yarn start"
+   volumes:
+    - ./frontend/react-project:/usr/src/app
+   ports:
+    - "3000:3000"
+   depends_on:
+    - web_backend   
